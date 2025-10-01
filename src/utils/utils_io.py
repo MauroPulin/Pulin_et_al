@@ -126,10 +126,12 @@ def read_group_yaml(group_yaml_path):
 def read_stop_flags_and_indices_yaml(stop_flag_yaml_path, trial_indices_path):
     with open(stop_flag_yaml_path, 'r') as file:
         stop_flags = yaml.load(file, Loader=yaml.FullLoader)
-    with open(trial_indices_path, 'r') as file:
-        trial_indices = yaml.load(file, Loader=yaml.FullLoader)
-    trial_indices = pd.DataFrame(trial_indices.items(), columns=['session_id', 'trial_idx'])
-    
+    if trial_indices_path is not None:
+        with open(trial_indices_path, 'r') as file:
+            trial_indices = yaml.load(file, Loader=yaml.FullLoader)
+        trial_indices = pd.DataFrame(trial_indices.items(), columns=['session_id', 'trial_idx'])
+    else:
+        trial_indices = None
     return stop_flags, trial_indices
 
 
@@ -152,17 +154,17 @@ def solve_common_paths(target):
     
     # Directories.
     data_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/data'
-    analysis_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard'
-    nwb_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/NWB'
-    processed_data_dir = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/data_processed'
-    
-    # Files.    
-    db_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/mice_info/session_metadata.xlsx'
-    trial_indices_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/mice_info/stop_flags/trial_indices_end_session.yaml'
-    trial_indices_sensory_map_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/mice_info/stop_flags/trial_indices_sensory_map.yaml'
-    stop_flags_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/mice_info/stop_flags/stop_flags_end_session.yaml'
-    stop_flags_sensory_map_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Anthony_Renard/mice_info/stop_flags/stop_flags_sensory_map.yaml'
-    
+    analysis_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin'
+    nwb_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/NWB'
+    processed_data_dir = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/data_processed'
+
+    # Files.
+    db_path = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/mice_info/session_metadata.xlsx'
+    trial_indices_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/mice_info/stop_flags/trial_indices_end_session.yaml'
+    trial_indices_sensory_map_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/mice_info/stop_flags/trial_indices_sensory_map.yaml'
+    stop_flags_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/mice_info/stop_flags/stop_flags_end_session.yaml'
+    stop_flags_sensory_map_yaml = '//sv-nas1.rcp.epfl.ch/Petersen-Lab/analysis/Mauro_Pulin/mice_info/stop_flags/stop_flags_sensory_map.yaml'
+
     if target == 'data':
         path = data_path
     elif target == 'analysis':

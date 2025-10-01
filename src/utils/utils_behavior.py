@@ -23,7 +23,7 @@ from nwb_wrappers import nwb_reader_functions as nwb_read
 
 def make_behavior_table(nwb_list, session_list, db_path, cut_session, stop_flag_yaml, trial_indices_yaml):
     if cut_session:
-        start_stop, trial_indices = io.read_stop_flags_and_indices_yaml(stop_flag_yaml, trial_indices_yaml)
+        start_stop, _ = io.read_stop_flags_and_indices_yaml(stop_flag_yaml, trial_indices_yaml)
     table = []
     for nwb, session in zip(nwb_list, session_list):
         df = nwb_read.get_trial_table(nwb)

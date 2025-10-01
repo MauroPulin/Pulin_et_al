@@ -15,7 +15,7 @@ import scipy.stats as stats
 
 # sys.path.append('H:\\anthony\\repos\\NWB_analysis')
 sys.path.append(r'/home/aprenard/repos/NWB_analysis')
-sys.path.append(r'/home/aprenard/repos/fast-learning')
+sys.path.append(r'/home/aprenard/repos/Pulin_et_al')
 import src.utils.utils_io as io
 import src.utils.utils_imaging as imaging_utils
 from analysis.psth_analysis import (make_events_aligned_array_6d,
@@ -32,29 +32,23 @@ from src.utils.utils_imaging import compute_roc
 # Get directories and files.
 db_path = io.solve_common_paths('db')
 nwb_path = io.solve_common_paths('nwb')
-trial_indices_yaml = io.solve_common_paths('trial_indices')
 stop_flag_yaml = io.solve_common_paths('stop_flags')
 trial_indices_sensory_map_yaml = io.solve_common_paths('trial_indices_sensory_map')
 stop_flag_sensory_map_yaml = io.solve_common_paths('stop_flags_sensory_map')
 processed_data_dir = io.solve_common_paths('processed_data')
 
-days = ['-3', '-2', '-1', '0', '+1', '+2']
+# days = ['-3', '-2', '-1', '0', '+1', '+2']
 _, nwb_list, mice_list, _ = io.select_sessions_from_db(db_path, nwb_path,
                                                 exclude_cols=['exclude', 'two_p_exclude'],
-                                                experimenters=['AR', 'GF', 'MI'],
-                                                day=days,
                                                 two_p_imaging='yes')
 
-with open(trial_indices_yaml, 'r') as stream:
+with open(stop_flag_yaml, 'r') as stream:
     trial_indices = yaml.load(stream, yaml.Loader)
-trial_indices = pd.DataFrame(trial_indices.items(), columns=['session_id', 'trial_idx'])
-# # For "non motivated" sensory mapping trials at the end of the session.
-# with open(trial_indices_sensory_map_yaml, 'r') as stream:
-#     trial_indices_sensory_map = yaml.load(stream, yaml.Loader)
-# trial_indices_sensory_map = pd.DataFrame(trial_indices_sensory_map.items(), columns=['session_id', 'trial_idx'])
+trial_indices = pd.DataFrame(trial_indices.items(), columns=['session_id', 'stop_flag'])
 
-mice_list = ['AR144', 'AR163', 'AR185', 'AR187']
-# nwb_list = [nwb for nwb in nwb_list if 'AR143' in nwb]
+# Generate trial indices from stop flags.
+trial_indices['trial_idx'] = trial_indices['stop_flag'].transform(lambda x: list(range(x[1]+1)))
+
 
 for mouse in mice_list:
     save_dir = os.path.join(processed_data_dir, 'mice', mouse)
@@ -76,7 +70,7 @@ for mouse in mice_list:
         sessions.append(session_id)
         
         # Parameters for tensor array.
-        cell_types = ['na', 'wM1', 'wS2']
+        cell_types = ['na']
         rrs_keys = ['ophys', 'fluorescence_all_cells', 'dff']
         time_range = (1,5)
         epoch_name = None
@@ -106,7 +100,7 @@ for mouse in mice_list:
     behav_table = make_behavior_table(session_nwb, sessions, db_path,
                                       cut_session=True,
                                       stop_flag_yaml=stop_flag_yaml,
-                                      trial_indices_yaml=trial_indices_yaml)
+                                      trial_indices_yaml=None)
         
     time = np.linspace(-time_range[0], time_range[1], traces.shape[2])
     # Create xarray.
